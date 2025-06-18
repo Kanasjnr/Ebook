@@ -1,0 +1,19 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Environment files
+.env
+.env.*  # if you have variants like .env.development, .env.production
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Optional build directories
+dist/
+build/
