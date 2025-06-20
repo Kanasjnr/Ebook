@@ -1,22 +1,35 @@
-import axios from 'axios';
-
 const api = import.meta.env.VITE_APP_DB_SERVER;
 
-// Configure axios defaults
-axios.defaults.withCredentials = true;
+// Helper function to handle fetch responses
+const handleResponse = async (response) => {
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+};
 
 const login = async (authDetail) => {
     try {
-        const response = await axios.post(`${api}/users/login`, authDetail);
+        const response = await fetch(`${api}/users/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(authDetail)
+        });
         
-        if (response.data.token) {
-            localStorage.setItem("token", JSON.stringify(response.data.token));
+        const data = await handleResponse(response);
+        
+        if (data.token) {
+            localStorage.setItem("token", JSON.stringify(data.token));
             localStorage.setItem("email", JSON.stringify(authDetail.email));
         }
 
-        return response.data;
+        return data;
     } catch (error) {
-        const errorMessage = error.response?.data?.message || error.message || 'Login failed';
+        const errorMessage = error.message || 'Login failed';
         throw new Error(errorMessage);
     }
 }
@@ -24,23 +37,35 @@ const login = async (authDetail) => {
 const register = async (authDetail) => {
     try {
         console.log('Registration data being sent:', authDetail);
-        const response = await axios.post(`${api}/users/`, authDetail);
+        const response = await fetch(`${api}/users/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(authDetail)
+        });
         
-        if (response.data.token) {
-            localStorage.setItem("token", JSON.stringify(response.data.token));
+        const data = await handleResponse(response);
+        
+        if (data.token) {
+            localStorage.setItem("token", JSON.stringify(data.token));
             localStorage.setItem("email", JSON.stringify(authDetail.email));
         }
 
-        return response.data;
+        return data;
     } catch (error) {
-        const errorMessage = error.response?.data?.message || error.message || 'Registration failed';
+        const errorMessage = error.message || 'Registration failed';
         throw new Error(errorMessage);
     }
 }
 
 const logout = async() => {
     try {
-        await axios.get(`${api}/users/logout`);
+        await fetch(`${api}/users/logout`, {
+            method: 'GET',
+            credentials: 'include'
+        });
     } catch (error) {
         console.error('Logout error:', error);
     } finally {

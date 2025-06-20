@@ -1,11 +1,18 @@
-import axios from 'axios';
-
 const api = import.meta.env.VITE_APP_DB_SERVER;
 
 const getSession = () => {
     const token = localStorage.getItem("token");
     return token ? JSON.parse(token) : null;
 }
+
+// Helper function to handle fetch responses
+const handleResponse = async (response) => {
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+};
 
 const getUser = async () => {
     const token = getSession();
@@ -15,15 +22,17 @@ const getUser = async () => {
     }
 
     try {
-        const response = await axios.get(`${api}/users/profile`, {
+        const response = await fetch(`${api}/users/profile`, {
+            method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            credentials: 'include'
         });
 
-        return response.data;
+        return await handleResponse(response);
     } catch (error) {
-        if (error.response?.status === 401) {
+        if (error.message.includes('401')) {
             // Token is invalid, clear localStorage
             localStorage.removeItem("token");
             localStorage.removeItem("email");
