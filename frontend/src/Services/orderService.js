@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const api = import.meta.env.VITE_APP_DB_SERVER;
 
 // Get authentication token from localStorage
@@ -10,66 +12,51 @@ const getAuthToken = () => {
 const placeOrder = async () => {
     const token = getAuthToken();
     
-    const response = await fetch(`${api}/order/placeOrder`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        credentials: 'include'
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to place order');
+    try {
+        const response = await axios.post(`${api}/order/placeOrder`, {}, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message || 'Failed to place order';
+        throw new Error(errorMessage);
     }
-
-    const data = await response.json();
-    return data;
 };
 
 // Get user orders
 const getUserOrders = async () => {
     const token = getAuthToken();
     
-    const response = await fetch(`${api}/order/getUserOrders`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        credentials: 'include'
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to get orders');
+    try {
+        const response = await axios.get(`${api}/order/getUserOrders`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message || 'Failed to get orders';
+        throw new Error(errorMessage);
     }
-
-    const data = await response.json();
-    return data;
 };
 
 // Get specific order by ID
 const getOrderById = async (orderId) => {
     const token = getAuthToken();
     
-    const response = await fetch(`${api}/order/getOrderById/${orderId}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        credentials: 'include'
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to get order');
+    try {
+        const response = await axios.get(`${api}/order/getOrderById/${orderId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message || 'Failed to get order';
+        throw new Error(errorMessage);
     }
-
-    const data = await response.json();
-    return data;
 };
 
 const orderService = {

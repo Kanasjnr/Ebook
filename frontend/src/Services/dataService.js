@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const api = import.meta.env.VITE_APP_DB_SERVER;
 
 const getSession = () => {
@@ -13,25 +15,21 @@ const getUser = async () => {
     }
 
     try {
-        const response = await fetch(`${api}/users/profile`, {
-            method: 'GET',
+        const response = await axios.get(`${api}/users/profile`, {
             headers: {
-                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            },
-            credentials: 'include'
+            }
         });
 
-        if (!response.ok) {
+        return response.data;
+    } catch (error) {
+        if (error.response?.status === 401) {
             // Token is invalid, clear localStorage
             localStorage.removeItem("token");
             localStorage.removeItem("email");
             return null;
         }
-
-        const userData = await response.json();
-        return userData;
-    } catch (error) {
+        
         // Network error or server down, fall back to localStorage
         const email = localStorage.getItem("email");
         return email ? { email: JSON.parse(email) } : null;

@@ -1,44 +1,41 @@
+import axios from 'axios';
+
+const api = import.meta.env.VITE_APP_DB_SERVER;
+
 const getProductList = async (searchTerm) => {
-    const api = import.meta.env.VITE_APP_DB_SERVER;
-
-    const response = await fetch(`${api}/product${searchTerm ? `?search=${searchTerm}` : ""}`);
-
-    if (!response.ok){
-        throw{message: response.statusText, status: response.status};
+    try {
+        const response = await axios.get(`${api}/product${searchTerm ? `?search=${searchTerm}` : ""}`);
+        return response.data;
+    } catch (error) {
+        throw {
+            message: error.response?.data?.message || error.message,
+            status: error.response?.status || 500
+        };
     }
-
-    const data = await response.json();
-    return data;
 }
 
 const getProduct = async (id) => {
-    const api = import.meta.env.VITE_APP_DB_SERVER;
-
-    const response = await fetch(`${api}/product/${id}`)
-
-    if (!response.ok){
-        throw{
-            message: response.statusText, status: response.status
-        }
+    try {
+        const response = await axios.get(`${api}/product/${id}`);
+        return response.data;
+    } catch (error) {
+        throw {
+            message: error.response?.data?.message || error.message,
+            status: error.response?.status || 500
+        };
     }
-    
-    const data = await response.json();
-    return data;
 }
 
 const getFeaturedList = async () => {
-    const api = import.meta.env.VITE_APP_DB_SERVER;
-
-    const response = await fetch(`${api}/product/featured`)
-
-    if (!response.ok){
-        throw{
-            message: response.statusText, status: response.status
-        }
+    try {
+        const response = await axios.get(`${api}/product/featured`);
+        return response.data;
+    } catch (error) {
+        throw {
+            message: error.response?.data?.message || error.message,
+            status: error.response?.status || 500
+        };
     }
-
-    const data = await response.json();
-    return data;
 }
 
 const productService = {

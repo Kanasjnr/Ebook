@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const api = import.meta.env.VITE_APP_DB_SERVER;
 
 // Get authentication token from localStorage
@@ -10,90 +12,72 @@ const getAuthToken = () => {
 const getUserCart = async () => {
     const token = getAuthToken();
     
-    const response = await fetch(`${api}/cart/getCart`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        credentials: 'include'
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to get cart');
+    try {
+        const response = await axios.get(`${api}/cart/getCart`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message || 'Failed to get cart';
+        throw new Error(errorMessage);
     }
-
-    const data = await response.json();
-    return data;
 };
 
 // Add item to cart
 const addToCartAPI = async (productId) => {
     const token = getAuthToken();
     
-    const response = await fetch(`${api}/cart/addtocart`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ id: productId }),
-        credentials: 'include'
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to add to cart');
+    try {
+        const response = await axios.post(`${api}/cart/addtocart`, 
+            { id: productId },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message || 'Failed to add to cart';
+        throw new Error(errorMessage);
     }
-
-    const data = await response.json();
-    return data;
 };
 
 // Remove item from cart
 const removeFromCartAPI = async (productId) => {
     const token = getAuthToken();
     
-    const response = await fetch(`${api}/cart/removeCart`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ id: productId }),
-        credentials: 'include'
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to remove from cart');
+    try {
+        const response = await axios.delete(`${api}/cart/removeCart`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            data: { id: productId }
+        });
+        return response.data;
+    } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message || 'Failed to remove from cart';
+        throw new Error(errorMessage);
     }
-
-    const data = await response.json();
-    return data;
 };
 
 // Clear entire cart
 const clearCartAPI = async () => {
     const token = getAuthToken();
     
-    const response = await fetch(`${api}/cart/clearCart`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        credentials: 'include'
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to clear cart');
+    try {
+        const response = await axios.delete(`${api}/cart/clearCart`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message || 'Failed to clear cart';
+        throw new Error(errorMessage);
     }
-
-    const data = await response.json();
-    return data;
 };
 
 const cartService = {

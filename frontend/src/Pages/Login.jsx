@@ -22,7 +22,13 @@ export const Login = () => {
             const data = await login(authDetail)
             if (data?.token) {
                 toast.success("Login successful! Welcome back!", {closeButton: true, position: "bottom-center"})
-                navigate("/products")
+                
+                // Check if user is admin and navigate accordingly
+                if (data.isAdmin) {
+                    navigate("/admin")
+                } else {
+                    navigate("/products")
+                }
             } else {
                 toast.error("No Token")
             }
